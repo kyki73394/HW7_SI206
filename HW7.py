@@ -65,8 +65,6 @@ def make_players_table(data, cur, conn):
         cur.execute("SELECT id FROM Positions WHERE position = (?)", (position,))
         position_id = cur.fetchall()[0][0]
 
-        print(position_id)
-
         cur.execute("INSERT OR IGNORE INTO Players (id, name, position_id, birthyear, nationality) VALUES (?,?,?,?,?)", (id, name, position_id, birthyear, nationality))
 
     conn.commit()
@@ -82,7 +80,17 @@ def make_players_table(data, cur, conn):
         # the player's name, their position_id, and their nationality.
 
 def nationality_search(countries, cur, conn):
-    pass
+    out = []
+
+    for country in countries:
+        cur.execute("SELECT * FROM Players WHERE nationality = (?)", (country,))
+        results = cur.fetchall()
+        
+        for player in results:
+            out.append((player[1], player[2], player[4]))
+
+    conn.commit()
+    return out
 
 ## [TASK 3]: 10 points
 # finish the function birthyear_nationality_search
@@ -188,7 +196,7 @@ class TestAllMethods(unittest.TestCase):
         self.assertIs(type(players_list[0][2]), int)
         self.assertIs(type(players_list[0][3]), int)
         self.assertIs(type(players_list[0][4]), str)
-    """
+    
     def test_nationality_search(self):
         x = sorted(nationality_search(['England'], self.cur, self.conn))
         self.assertEqual(len(x), 11)
@@ -199,7 +207,7 @@ class TestAllMethods(unittest.TestCase):
         self.assertEqual(len(y), 3)
         self.assertEqual(y[2],('Fred', 2, 'Brazil'))
         self.assertEqual(y[0][1], 3)
-
+    """
     def test_birthyear_nationality_search(self):
 
         a = birthyear_nationality_search(24, 'England', self.cur, self.conn)
