@@ -109,7 +109,15 @@ def nationality_search(countries, cur, conn):
 
 
 def birthyear_nationality_search(age, country, cur, conn):
-    pass
+    out = []
+
+    cur.execute("SELECT * FROM Players WHERE nationality = (?) AND birthyear < 2023 - (?)", (country, age))
+    results = cur.fetchall()
+
+    for player in results:
+        out.append((player[1], player[4], player[3]))
+
+    return out
 
 ## [TASK 4]: 15 points
 # finish the function position_birth_search
@@ -207,7 +215,7 @@ class TestAllMethods(unittest.TestCase):
         self.assertEqual(len(y), 3)
         self.assertEqual(y[2],('Fred', 2, 'Brazil'))
         self.assertEqual(y[0][1], 3)
-    """
+    
     def test_birthyear_nationality_search(self):
 
         a = birthyear_nationality_search(24, 'England', self.cur, self.conn)
@@ -215,7 +223,7 @@ class TestAllMethods(unittest.TestCase):
         self.assertEqual(a[0][1], 'England')
         self.assertEqual(a[3][2], 1992)
         self.assertEqual(len(a[1]), 3)
-
+    """
     def test_type_speed_defense_search(self):
         b = sorted(position_birth_search('Goalkeeper', 35, self.cur, self.conn))
         self.assertEqual(len(b), 2)
